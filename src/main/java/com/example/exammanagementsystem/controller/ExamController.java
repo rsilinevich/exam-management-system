@@ -2,6 +2,7 @@ package com.example.exammanagementsystem.controller;
 
 import com.example.exammanagementsystem.model.Exam;
 import com.example.exammanagementsystem.service.ExamService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,14 +16,26 @@ public class ExamController {
         this.examService = examService;
     }
 
-    @GetMapping
-    public Iterable<Exam> getAllExams() {
-        return examService.getAllExams();
+    @PostMapping
+    public String createExam(@Valid @RequestBody Exam exam) {
+        examService.createExam(exam);
+        return "Exam created successfully!";
     }
 
-    @PostMapping
-    public String addNewExam(@RequestBody Exam exam) {
-        examService.addNewExam(exam);
-        return "Exam added successfully!";
+    @GetMapping
+    public Iterable<Exam> readExams() {
+        return examService.readExams();
+    }
+
+    @PutMapping("/{id}")
+    public String updateExam(@PathVariable Long id, @Valid @RequestBody Exam updatedExamData) {
+        examService.updateExam(id, updatedExamData);
+        return "Exam updated successfully!";
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteExam(@PathVariable Long id) {
+        examService.deleteExam(id);
+        return "Exam deleted successfully!";
     }
 }
