@@ -4,16 +4,22 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-@Data
-@Entity // Tells Hibernate to make a table out of this class
-@Table(name = "exams") // Shows table name in database
+@Entity
+@Table(name = "exams")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Exam {
-    @Id // Marks field as primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // auto-increment
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "Exam title is required")
@@ -21,9 +27,12 @@ public class Exam {
     private String title;
 
     @NotNull(message = "Exam date is required")
-    @FutureOrPresent(message = "Date must be in today or in the future")
+    @FutureOrPresent(message = "Date must be today or in the future")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Column(nullable = false)
     private LocalDate date;
 
     @NotBlank(message = "Professor name is required")
+    @Column(nullable = false)
     private String professor;
 }

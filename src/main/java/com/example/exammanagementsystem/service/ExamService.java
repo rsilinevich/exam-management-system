@@ -1,6 +1,7 @@
 package com.example.exammanagementsystem.service;
 
 import com.example.exammanagementsystem.model.Exam;
+import com.example.exammanagementsystem.repository.ExamRecordRepository;
 import com.example.exammanagementsystem.repository.ExamRepository;
 import org.springframework.stereotype.Service;
 
@@ -8,35 +9,44 @@ import java.util.List;
 
 @Service
 public class ExamService {
-    private final ExamRepository examRepository;
 
-    public ExamService(ExamRepository examRepository) {
+    private final ExamRepository examRepository;
+    private final ExamRecordRepository examRecordRepository;
+
+    public ExamService(ExamRepository examRepository,
+                       ExamRecordRepository examRecordRepository) {
         this.examRepository = examRepository;
+        this.examRecordRepository = examRecordRepository;
     }
 
-    public void createExam(Exam exam) {
-        examRepository.save(exam);
+    public Exam createExam(Exam exam) {
+        return examRepository.save(exam);
     }
 
     public List<Exam> readExams() {
-        return examRepository.findAll(); // return the whole list
+        return examRepository.findAllByOrderByIdAsc();
     }
 
-    public void updateExam(Long id, Exam updatedExamData) {
-        // 1. Find the existing exam in the database (or throw an error if it doesn't exist)
-        Exam existingExam = examRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Exam not found!"));
+    public Exam getExamById(Long id) {
+        return examRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Exam with ID " + id + " not found."));
+    }
 
-        // 2. Update the fields
+    public Exam updateExam(Long id, Exam updatedExamData) {
+        Exam existingExam = getExamById(id);
+
         existingExam.setTitle(updatedExamData.getTitle());
         existingExam.setDate(updatedExamData.getDate());
         existingExam.setProfessor(updatedExamData.getProfessor());
 
-        // 3. Save it back to the database (Hibernate knows to update, not insert, because the ID already exists)
-        examRepository.save(existingExam);
+        return examRepository.save(existingExam);
     }
 
     public void deleteExam(Long id) {
+        if (examRecordRepository.existsByExamId(id)) {
+            throw new RuntimeException("Cannot delete exam because it is used in exam records.");
+        }
+
         examRepository.deleteById(id);
     }
 }

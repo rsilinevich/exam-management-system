@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Record | Exam Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-gray-50 flex items-center justify-center min-h-screen font-sans antialiased">
+
+<div class="w-full max-w-lg bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-2 tracking-tight">Create Exam Record</h2>
+    <p class="text-sm text-gray-500 mb-6">Assign a student to an exam and optionally enter a grade.</p>
+
+    <form th:action="@{/records/save}" method="post" class="space-y-5">
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Student</label>
+            <select name="studentId"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
+                <option value="" disabled selected>Choose a student...</option>
+                <option th:each="student : ${students}"
+                        th:value="${student.id}"
+                        th:text="|${student.name} (${student.email})|">
+                    Student Name
+                </option>
+            </select>
+
+            <p th:if="${#lists.isEmpty(students)}" class="text-xs text-red-500 mt-1">
+                No students available. Create a student first.
+            </p>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Exam</label>
+            <select name="examId"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
+                <option value="" disabled selected>Choose an exam...</option>
+                <option th:each="exam : ${exams}"
+                        th:value="${exam.id}"
+                        th:text="|${exam.title} - ${exam.professor}|">
+                    Exam Title
+                </option>
+            </select>
+
+            <p th:if="${#lists.isEmpty(exams)}" class="text-xs text-red-500 mt-1">
+                No exams available. Create an exam first.
+            </p>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Grade 1-10</label>
+            <input type="number"
+                   name="grade"
+                   min="1"
+                   max="10"
+                   placeholder="Optional"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+        </div>
+
+        <div class="flex gap-4 pt-4">
+            <a th:href="@{/}"
+               class="w-1/3 text-center bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 rounded-lg text-sm transition-colors">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="w-2/3 bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 rounded-lg text-sm transition-colors cursor-pointer">
+                Save Record
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

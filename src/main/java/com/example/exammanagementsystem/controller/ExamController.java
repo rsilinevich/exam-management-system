@@ -3,39 +3,47 @@ package com.example.exammanagementsystem.controller;
 import com.example.exammanagementsystem.model.Exam;
 import com.example.exammanagementsystem.service.ExamService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/exams")
 public class ExamController {
-    // Use Dependency Injection to bring your ExamService into the controller via the constructor.
-    // Write a @GetMapping method to fetch the exams, and a @PostMapping method to create one.
+
     private final ExamService examService;
 
     public ExamController(ExamService examService) {
         this.examService = examService;
     }
 
-    @PostMapping
-    public String createExam(@Valid @RequestBody Exam exam) {
-        examService.createExam(exam);
-        return "Exam created successfully!";
-    }
-
     @GetMapping
-    public Iterable<Exam> readExams() {
+    public List<Exam> readExams() {
         return examService.readExams();
     }
 
-    @PutMapping("/{id}")
-    public String updateExam(@PathVariable Long id, @Valid @RequestBody Exam updatedExamData) {
-        examService.updateExam(id, updatedExamData);
-        return "Exam updated successfully!";
+    @GetMapping("/{id}")
+    public Exam readExam(@PathVariable Long id) {
+        return examService.getExamById(id);
     }
 
+    @PostMapping
+    public Exam createExam(@Valid @RequestBody Exam exam) {
+        return examService.createExam(exam);
+    }
+
+    @PutMapping("/{id}")
+    public Exam updateExam(@PathVariable Long id,
+                           @Valid @RequestBody Exam updatedExamData) {
+        return examService.updateExam(id, updatedExamData);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public String deleteExam(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteExam(@PathVariable Long id) {
         examService.deleteExam(id);
-        return "Exam deleted successfully!";
+        return ResponseEntity.noContent().build();
     }
 }
